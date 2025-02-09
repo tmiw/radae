@@ -73,7 +73,7 @@ else(NOT CMAKE_CROSSCOMPILING)
     else(WIN32)
         message(FATAL_ERROR "Currently only supports Windows when cross-compiling.")
     endif(WIN32)
-endif(NOT CMAKE_CROSSCOMPILING OR APPLE)
+endif(NOT CMAKE_CROSSCOMPILING)
 
 add_subdirectory(src)
 
