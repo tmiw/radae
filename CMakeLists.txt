@@ -40,7 +40,7 @@ endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 # Set default flags (from opus-ng build)
 set(CMAKE_C_FLAGS "-O2 -fstack-protector-strong -W -Wall -Wextra -Wcast-align -Wnested-externs -Wshadow -Wstrict-prototypes -DHAVE_CONFIG_H")
 
-if(NOT CMAKE_CROSSCOMPILING OR APPLE)
+if(NOT CMAKE_CROSSCOMPILING)
     # Python tells us the CFLAGS we need for Embedding Python in a C lib.
     # We also need to make sure we select the libraries in any activated venv first,
     # in case the user is using that for e.g. NumPy/PyTorch.
@@ -48,7 +48,7 @@ if(NOT CMAKE_CROSSCOMPILING OR APPLE)
     set(Python3_FIND_REGISTRY LAST)
     set(Python3_FIND_FRAMEWORK LAST)
     find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
-else(NOT CMAKE_CROSSCOMPILING OR APPLE)
+else(NOT CMAKE_CROSSCOMPILING)
     # Cross-compiling. find_package(Python3) will find the host's Python,
     # not the target's, so we can't use it. The user will need to specify
     # the root directory of a target's Python.
@@ -65,6 +65,11 @@ else(NOT CMAKE_CROSSCOMPILING OR APPLE)
         set_property(TARGET Python3::Python PROPERTY IMPORTED_LOCATION ${Python3_ROOT_DIR}/python312.dll)
         set_property(TARGET Python3::NumPy PROPERTY IMPORTED_IMPLIB ${Python3_ROOT_DIR}/Lib/site-packages/numpy/core/lib/npymath.lib)
         set_property(TARGET Python3::NumPy PROPERTY IMPORTED_LOCATION ${Python3_ROOT_DIR}/Lib/site-packages/numpy/core/lib/npymath.lib)
+    elseif(APPLE)
+        target_include_directories(Python3::Python INTERFACE ${Python3_ROOT_DIR}/Headers)
+        target_include_directories(Python3::NumPy INTERFACE ${Python3_ROOT_DIR}/Versions/Current/lib/python3.12/site-packages/numpy/_core/include)
+        set_property(TARGET Python3::Python PROPERTY IMPORTED_LOCATION ${Python3_ROOT_DIR}/Versions/Current/lib/libpython312.dylib)
+        set_property(TARGET Python3::NumPy PROPERTY IMPORTED_LOCATION ${Python3_ROOT_DIR}/Versions/Current/lib/python3.12/site-packages/numpy/core/lib/npymath.lib)
     else(WIN32)
         message(FATAL_ERROR "Currently only supports Windows when cross-compiling.")
     endif(WIN32)
