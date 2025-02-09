@@ -38,7 +38,7 @@ if [ $output_speech == "-" ]; then
 elif [ $output_speech != "/dev/null" ]; then
     sox ${input_offair} -t .s16 -r 8000 -c 1 - | \
     python3 int16tof32.py --zeropad | \
-    python3 radae_rx.py ${model} "$@" | \
+    python3 radae_rxe.py "$@" | \
     lpcnet_demo -fargan-synthesis - - | \
     sox -t .s16 -r 16000 -c 1 - ${output_speech}
 fi

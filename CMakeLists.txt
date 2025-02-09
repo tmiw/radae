@@ -40,7 +40,7 @@ endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 # Set default flags (from opus-ng build)
 set(CMAKE_C_FLAGS "-O2 -fstack-protector-strong -W -Wall -Wextra -Wcast-align -Wnested-externs -Wshadow -Wstrict-prototypes -DHAVE_CONFIG_H")
 
-if(NOT CMAKE_CROSSCOMPILING)
+if(NOT CMAKE_CROSSCOMPILING OR APPLE)
     # Python tells us the CFLAGS we need for Embedding Python in a C lib.
     # We also need to make sure we select the libraries in any activated venv first,
     # in case the user is using that for e.g. NumPy/PyTorch.
@@ -48,7 +48,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     set(Python3_FIND_REGISTRY LAST)
     set(Python3_FIND_FRAMEWORK LAST)
     find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
-else(NOT CMAKE_CROSSCOMPILING)
+else(NOT CMAKE_CROSSCOMPILING OR APPLE)
     # Cross-compiling. find_package(Python3) will find the host's Python,
     # not the target's, so we can't use it. The user will need to specify
     # the root directory of a target's Python.
@@ -68,7 +68,7 @@ else(NOT CMAKE_CROSSCOMPILING)
     else(WIN32)
         message(FATAL_ERROR "Currently only supports Windows when cross-compiling.")
     endif(WIN32)
-endif(NOT CMAKE_CROSSCOMPILING)
+endif(NOT CMAKE_CROSSCOMPILING OR APPLE)
 
 add_subdirectory(src)
 
